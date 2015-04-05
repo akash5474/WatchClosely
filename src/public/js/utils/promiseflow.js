@@ -1,87 +1,91 @@
-function appendStep(chain, el, i, cb) {
-  return chain.then( (function() {
-    var idx = i;
-    return function() {
-      el.initForControlFlow(idx);
-    };
-  })() )
-  .then( executeStep( el, i ))
-  .then( (function() {
-    var idx = i;
-    return function() {
-      return cb(el, idx);
-    };
-  })() );
+// Appends task to a chain of promises;
+function appendStep(chain, task, idx, cb) {
+  return chain.then(() => {
+    // Pre-process task aka animate circle to processing area
+    return task.initForControlFlow( idx );
+  })
+  // Start task's processing animation
+  .then( executeStep(task, idx))
+  // Callback to indicate processing is complete
+  .then(() => {
+    return cb(task, idx);
+  });
 };
 
-function getRandomNum() {
-  let max = 5;
-  let min = 1
-  return Math.floor((Math.random() * (max - min) + min)*1000);
-}
 
-function timeoutPromise(item, idx) {
-  return new Promise((resolve, reject) => {
-    item.process((err) => {
-      if ( err ) return reject(err);
-      // console.log('promise resolved', idx)
-      resolve();
-    });
-    // setTimeout(resolve, duration);
-  });
-}
-
-function executeStep(item, idx) {
+// Return promisified task which resolves when completed;
+function executeStep(task, idx) {
   return () => {
-    return timeoutPromise(item, idx);
+    return new Promise((resolve, reject) => {
+      // Process the task
+      task.process(( err ) => {
+        if ( err ) return reject( err );
+        // Signal completion of processing task
+        resolve();
+      });
+    });
   };
-}
+};
 
+// Execute Sequential Processing
 function executeSequence(arr, cb) {
-  var chain = Promise.resolve();
-  // for (var i = 0; i < arr.length; i++) {
-  arr.forEach((el, i) => {
-    chain = appendStep(chain, el, i, cb)
-  })
-  // }
+  let chain = Promise.resolve();
+  arr.forEach((task, i) => {
+    // Queue up a chain of tasks
+    chain = appendStep(chain, task, i, cb)
+  });
   return chain.then();
 };
 
+// Execute Parallel Processing
 function executeParallel(arr, cb) {
-  var tasks = arr.map(function(el, i) {
-    return appendStep(Promise.resolve(), el, i, cb);
+  // Create an array of task promises for each task
+  let tasks = arr.map(function(task, i) {
+    return appendStep(Promise.resolve(), task, i, cb);
   });
 
   return Promise.all(tasks);
 };
 
+// Execute Limited Parallel Processing
 function executeLimitedParallel(arr, concurrency, cb) {
-  var tasks = arr.map(function(el, i) {
+  let running = 0;
+  let tasks = arr.map(function(task, i) {
+    // Wrap in a function in order to
+    // postpone processing for a later time
     return function() {
-      return appendStep(Promise.resolve(), el, i, cb)
+      return appendStep(Promise.resolve(), task, i, cb);
     };
   });
-  var running = 0;
 
+  // Recursive processing function
   function limitParallel(concurrency, cb) {
     return new Promise((resolve, reject) => {
-
+      // Start up new task if possible
       while (running < concurrency && tasks.length) {
-        var task = tasks.shift();
+        let task = tasks.shift();
+
+        // When the task is complete
         task().then(() => {
           running--;
-          return limitParallel(concurrency, cb).then(resolve);
+          // Recursively call limitParallel to queue up more tasks
+          // Resolve this task if another can't be queued up
+          // because of the concurrency limit
+          return limitParallel(concurrency, cb)
+            .then(resolve);
         });
         running++;
       }
 
+      // Complete if all there are no tasks left
+      // and none of them are running
       if ( !tasks.length && !running ) {
         return resolve();
       }
     });
   };
 
-  return limitParallel(concurrency, cb)
+  return limitParallel(concurrency, cb);
 };
 
 export default {

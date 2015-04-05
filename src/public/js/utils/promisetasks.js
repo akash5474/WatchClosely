@@ -1,42 +1,51 @@
-function animateOut(el) {
+function getRunTime() {
+  let max = 5;
+  let min = 1
+  return Math.floor((( Math.random() * (max - min) + min ) * 1000 ) / 4 );
+}
+
+function animateOut(el, ms) {
   return new Promise((resolve, reject) => {
     el.animate({
       r: 40
-    }, 400, 'linear', (err) => {
+    }, ms, 'linear', (err) => {
       if (err) return reject(err);
       resolve();
     });
   });
 };
 
-function animateIn(el) {
+function animateIn(el, ms) {
   return new Promise((resolve, reject) => {
     el.animate({
       r: 30
-    }, 400, 'linear', (err) => {
+    }, ms, 'linear', (err) => {
       if (err) return reject(err);
       resolve();
     });
   });
 };
 
-function attachProcess(chain, el, cb) {
+// Add the processing task animation to the promise chain
+// And execute the callback on completion
+function attachProcess(chain, el, iteratorFunc) {
+  const animTime = getRunTime();
   return chain.then(() => {
-    return animateOut(el).then(() => {
-      return animateIn(el);
+    return animateOut(el, animTime).then(() => {
+      return animateIn(el, animTime);
     }).then(() => {
-      return animateOut(el);
+      return animateOut(el, animTime);
     }).then(() => {
-      return animateIn(el);
+      return animateIn(el, animTime);
     });
-  }).then(cb);
+  }).then(iteratorFunc);
 };
 
 export default {
-  initForControlFlow(circle) {
+  initForControlFlow(el) {
     return function(idx) {
       return new Promise((resolve, reject) => {
-        circle.animate({
+        el.animate({
           cx: 150 + idx*100,
           cy: 200,
           fill: '#b02424',
@@ -50,9 +59,9 @@ export default {
   },
 
   processItem(el) {
-    return function(cb) {
+    return function(iteratorFunc) {
       var chain = Promise.resolve();
-      chain = attachProcess(chain, el, cb);
+      chain = attachProcess(chain, el, iteratorFunc);
     };
   },
 

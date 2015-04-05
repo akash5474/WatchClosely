@@ -1,6 +1,11 @@
 import React from 'react';
-import PromiseFlow from './PromiseFlow.jsx';
-import GeneratorFlow from './GeneratorFlow.jsx';
+import FlowDemoFactory from './FlowDemo.jsx';
+import PromiseFlow from '../utils/promiseflow';
+import PromiseDemoMixin from '../mixins/promisedemomixin';
+import PromiseTasks from '../utils/promisetasks';
+
+const PromiseFlowComponent = FlowDemoFactory(PromiseTasks, PromiseFlow, [PromiseDemoMixin]);
+// import GeneratorFlow from './GeneratorFlow.jsx';
 // import MemoryStats from 'memory-stats';
 
 export default class ReactApp extends React.Component {
@@ -26,8 +31,7 @@ export default class ReactApp extends React.Component {
           <div className="small-12 columns">
             <h1 className="text-center">Design Patterns</h1>
           </div>
-          <PromiseFlow />
-          <GeneratorFlow />
+          <PromiseFlowComponent />
         </div>
       </section>
     )
