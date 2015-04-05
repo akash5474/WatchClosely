@@ -30,15 +30,21 @@ export default React.createClass({
   },
   resetDemo() {
     return new Promise((resolve, reject) => {
+      if ( this.state.demoRunning || !this.state.demoFinished ) {
+        resolve();
+      }
+
       this.state.circles.forEach((circle, i) => {
-        circle.attr({
+        circle.animate({
           cx: 150 + i*100,
           cy: 100,
           fill: '#346699',
           stroke: '#346699',
+        }, 500, 'linear', (err) => {
+          if (err) return reject(err);
+          resolve();
         });
       });
-      resolve();
     });
   },
   demoFactory(type = 'sequence') {
@@ -65,15 +71,23 @@ export default React.createClass({
     }
 
     return () => {
+      let delay = this.state.demoFinished ? 600 : 1200;
+      this.setState({
+        demoRunning: true
+      });
       this.resetDemo().then(() => {
         setTimeout(() => {
-          demoFunc().catch(function(err) {
+          demoFunc().catch((err) => {
             console.log('err', err);
             console.log(err.stack);
           }).then((progress) => {
+            this.setState({
+              demoFinished: true,
+              demoRunning: false
+            });
             console.log('complete');
           });
-        }, 1200);
+        }, delay);
       })
 
     };
@@ -82,7 +96,9 @@ export default React.createClass({
     return {
       width: 0,
       circles: [],
-    }
+      demoFinished: false,
+      demoRunning: false,
+    };
   },
   componentDidMount() {
     this.initDemo();
@@ -95,9 +111,9 @@ export default React.createClass({
     return (
       <div className="small-12 columns">
         <ul className="button-group radius">
-          <li><button className="button" onClick={this.demoFactory('sequence')} >Sequence</button></li>
-          <li><button className="button" onClick={this.demoFactory('parallel')}>Parallel</button></li>
-          <li><button className="button" onClick={this.demoFactory('limited')}>Limited Parallel</button></li>
+          <li><button className="button" disabled={this.state.demoRunning} onClick={this.demoFactory('sequence')} >Sequence</button></li>
+          <li><button className="button" disabled={this.state.demoRunning} onClick={this.demoFactory('parallel')}>Parallel</button></li>
+          <li><button className="button" disabled={this.state.demoRunning} onClick={this.demoFactory('limited')}>Limited Parallel</button></li>
         </ul>
       </div>
     )
