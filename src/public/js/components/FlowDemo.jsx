@@ -1,9 +1,10 @@
 import React from 'react';
 import Raphael from 'raphael';
+import DemoMixinFactory from '../mixins/demomixinfactory';
 
-export default function FlowDemoFactory(tasks, controlFlow, mixins) {
+export default function FlowDemoFactory(tasks, flow) {
   return React.createClass({
-    mixins: mixins,
+    mixins: [ DemoMixinFactory(flow) ],
     initDemo(tasks) {
       let node = this.getDOMNode();
       let width = node.offsetWidth;
@@ -62,17 +63,17 @@ export default function FlowDemoFactory(tasks, controlFlow, mixins) {
           <ul className="button-group radius">
             <li>
               <button className="button" disabled={this.state.demoRunning}
-                onClick={this.demoFactory('sequence', controlFlow)}
+                onClick={this.demoFactory('sequence')}
               >Sequence</button>
             </li>
             <li>
               <button className="button" disabled={this.state.demoRunning}
-                onClick={this.demoFactory('parallel', controlFlow)}
+                onClick={this.demoFactory('parallel')}
               >Parallel</button>
             </li>
             <li>
               <button className="button" disabled={this.state.demoRunning}
-                onClick={this.demoFactory('limited', controlFlow)}
+                onClick={this.demoFactory('limited')}
               >Limited Parallel</button>
             </li>
           </ul>

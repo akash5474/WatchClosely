@@ -1,10 +1,9 @@
 import React from 'react';
 import FlowDemoFactory from './FlowDemo.jsx';
-import PromiseFlow from '../utils/promiseflow';
-import PromiseDemoMixin from '../mixins/promisedemomixin';
 import PromiseTasks from '../utils/promisetasks';
+import PromiseFlow from '../utils/promiseflow';
 
-const PromiseFlowComponent = FlowDemoFactory(PromiseTasks, PromiseFlow, [PromiseDemoMixin]);
+const PromiseFlowComponent = FlowDemoFactory(PromiseTasks, PromiseFlow);
 // import GeneratorFlow from './GeneratorFlow.jsx';
 // import MemoryStats from 'memory-stats';
 
