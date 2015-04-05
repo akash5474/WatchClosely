@@ -1,5 +1,3 @@
-// import d3 from 'd3';
-
 function appendStep(chain, el, i, cb) {
   return chain.then( (function() {
     var idx = i;
@@ -16,13 +14,13 @@ function appendStep(chain, el, i, cb) {
   })() );
 };
 
-export function getRandomNum() {
+function getRandomNum() {
   let max = 5;
   let min = 1
   return Math.floor((Math.random() * (max - min) + min)*1000);
 }
 
-export function timeoutPromise(item, idx) {
+function timeoutPromise(item, idx) {
   return new Promise((resolve, reject) => {
     item.process((err) => {
       if ( err ) return reject(err);
@@ -33,13 +31,13 @@ export function timeoutPromise(item, idx) {
   });
 }
 
-export function executeStep(item, idx) {
+function executeStep(item, idx) {
   return () => {
     return timeoutPromise(item, idx);
   };
 }
 
-export function executeSequence(arr, cb) {
+function executeSequence(arr, cb) {
   var chain = Promise.resolve();
   // for (var i = 0; i < arr.length; i++) {
   arr.forEach((el, i) => {
@@ -49,7 +47,7 @@ export function executeSequence(arr, cb) {
   return chain.then();
 };
 
-export function executeParallel(arr, cb) {
+function executeParallel(arr, cb) {
   var tasks = arr.map(function(el, i) {
     return appendStep(Promise.resolve(), el, i, cb);
   });
@@ -57,7 +55,7 @@ export function executeParallel(arr, cb) {
   return Promise.all(tasks);
 };
 
-export function executeLimitedParallel(arr, concurrency, cb) {
+function executeLimitedParallel(arr, concurrency, cb) {
   var tasks = arr.map(function(el, i) {
     return function() {
       return appendStep(Promise.resolve(), el, i, cb)
@@ -84,4 +82,10 @@ export function executeLimitedParallel(arr, concurrency, cb) {
   };
 
   return limitParallel(concurrency, cb)
+};
+
+export default {
+  executeSequence: executeSequence,
+  executeParallel: executeParallel,
+  executeLimitedParallel: executeLimitedParallel
 };
