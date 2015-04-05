@@ -71,7 +71,7 @@ export default React.createClass({
     }
 
     return () => {
-      let delay = this.state.demoFinished ? 600 : 1200;
+      let delay = 800;
       this.setState({
         demoRunning: true
       });
