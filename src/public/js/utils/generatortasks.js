@@ -1,20 +1,9 @@
+import generatorFlow from './generatorutils';
+
 function getRunTime() {
   let max = 5;
   let min = 1
   return Math.floor((( Math.random() * (max - min) + min ) * 1000 ) / 4 );
-};
-
-function asyncGeneratorFlow(generatorFunction) {
-  function callback(err) {
-    if (err) {
-      return generatorFunction.throw(err);
-    }
-    const results = [].slice.call(arguments, 1);
-    generator.next( results.length > 1 ? results: results[0] );
-  }
-
-  const generator = generatorFunction(callback);
-  generator.next();
 };
 
 function* makeGenerator() {
@@ -54,7 +43,7 @@ function initForControlFlow(el, idx) {
 
 function processItem(el) {
   return function(task, done) {
-    asyncGeneratorFlow(function* (callback) {
+    generatorFlow(function* (callback) {
       let ms = getRunTime();
       yield task.initForControlFlow(callback);
       yield animateOut(el, ms, callback);

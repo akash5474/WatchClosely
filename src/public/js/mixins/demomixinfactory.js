@@ -1,3 +1,5 @@
+import generatorFlow from '../utils/generatorutils';
+
 export default function DemoMixinFactory(type = 'promise', flow) {
   const factories = {
     promiseDemoProxy(type = 'sequence') {
@@ -55,7 +57,7 @@ export default function DemoMixinFactory(type = 'promise', flow) {
     generatorDemoProxy(type = 'sequence') {
       let demoFunc;
 
-      function asyncGeneratorFlow(generatorFunction) {
+      function generatorFlow(generatorFunction) {
         function callback(err) {
           if (err) {
             return generatorFunction.throw(err);
@@ -71,7 +73,7 @@ export default function DemoMixinFactory(type = 'promise', flow) {
       if ( type === 'sequence' ) {
         demoFunc = (cb, done) => {
           let state = this.state;
-          asyncGeneratorFlow(function* (callback) {
+          generatorFlow(function* (callback) {
             yield flow.executeSequence(state.circles, (circle, idx) => {
               return cb(idx);
             }, callback);
@@ -81,7 +83,7 @@ export default function DemoMixinFactory(type = 'promise', flow) {
       } else if ( type === 'parallel' ) {
         demoFunc = (cb, done) => {
           let state = this.state;
-          asyncGeneratorFlow(function* (callback) {
+          generatorFlow(function* (callback) {
             yield flow.executeParallel(state.circles, (circle, idx) => {
               return cb(idx);
             }, callback);
@@ -91,7 +93,7 @@ export default function DemoMixinFactory(type = 'promise', flow) {
       } else if ( type === 'limited' ) {
         demoFunc = (cb, done) => {
           let state = this.state;
-          asyncGeneratorFlow(function* (callback) {
+          generatorFlow(function* (callback) {
             yield flow.executeLimitedParallel(state.circles, 2, (circle, idx) => {
               return cb(idx);
             }, callback);

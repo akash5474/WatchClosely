@@ -1,18 +1,7 @@
-function asyncGeneratorFlow(generatorFunction) {
-  function callback(err) {
-    if (err) {
-      return generatorFunction.throw(err);
-    }
-    const results = [].slice.call(arguments, 1);
-    generator.next( results.length > 1 ? results: results[0] );
-  }
-
-  const generator = generatorFunction(callback);
-  generator.next();
-};
+import generatorFlow from './generatorutils';
 
 function executeSequence(arr, iteratorFunc, finished) {
-  asyncGeneratorFlow(function* (callback) {
+  generatorFlow(function* (callback) {
     for ( let idx = 0; idx < arr.length; idx++ ) {
       let task = arr[idx];
       yield task.process(task, callback);
@@ -23,10 +12,10 @@ function executeSequence(arr, iteratorFunc, finished) {
 };
 
 function executeParallel(arr, iteratorFunc, finished) {
-  return asyncGeneratorFlow(function* (done) {
+  return generatorFlow(function* (done) {
     let completed = 0;
     let tasks = arr.map((task, idx) => {
-      return asyncGeneratorFlow(function* (callback) {
+      return generatorFlow(function* (callback) {
         yield task.process(task, callback);
         iteratorFunc(task, idx);
         if ( ++completed === arr.length ) {
@@ -43,7 +32,7 @@ function executeLimitedParallel(arr, concurrency, iteratorFunc, finished) {
   let running = 0;
   let tasks = arr.map((task, idx) => {
     return (completed) => {
-      asyncGeneratorFlow(function* (callback) {
+      generatorFlow(function* (callback) {
         yield task.process(task, callback);
         iteratorFunc(task, idx);
         completed();
