@@ -42,11 +42,11 @@ function attachProcess(chain, el, iteratorFunc) {
 };
 
 export default {
-  initForControlFlow(el) {
-    return function(idx) {
+  initForControlFlow(el, idx) {
+    return function() {
       return new Promise((resolve, reject) => {
         el.animate({
-          cx: 150 + idx*100,
+          cx: 50 + idx*100,
           cy: 200,
           fill: '#b02424',
           stroke: '#b02424'
@@ -60,16 +60,16 @@ export default {
 
   processItem(el) {
     return function(iteratorFunc) {
-      var chain = Promise.resolve();
+      let chain = Promise.resolve();
       chain = attachProcess(chain, el, iteratorFunc);
     };
   },
 
-  finishProcessing(el) {
-    return function(idx) {
+  finishProcessing(el, idx) {
+    return function() {
       return new Promise((resolve, reject) => {
         el.animate({
-          cx: 150 + idx*100,
+          cx: 50 + idx*100,
           cy: 300,
           fill: '#7ab828',
           stroke: '#7ab828'
