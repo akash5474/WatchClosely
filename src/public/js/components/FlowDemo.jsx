@@ -58,13 +58,13 @@ export default function FlowDemoFactory(type, tasks, flow) {
     },
     componentDidMount() {
       this.initDemo(tasks);
-      // window.Rainbow.color(flow.appendStepStringFunc(), 'javascript',
-      //   (results) => {
-      //     console.log(results);
-      //     this.setState({
-      //       code: results
-      //     });
-      //   });
+      window.Rainbow.color(flow.flowStringFunc(), 'javascript',
+        (results) => {
+          // console.log(results);
+          this.setState({
+            code: results
+          });
+        });
     },
     render() {
       return (

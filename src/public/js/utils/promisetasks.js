@@ -41,7 +41,35 @@ function attachProcess(chain, el, iteratorFunc) {
   }).then(iteratorFunc);
 };
 
+// Return promisified task which resolves when completed;
+function executeStep(task, idx) {
+  return () => {
+    return new Promise((resolve, reject) => {
+      // Process the task
+      task.process(( err ) => {
+        if ( err ) return reject( err );
+        // Signal completion of processing task
+        resolve();
+      });
+    });
+  };
+};
+
 export default {
+  // Appends task to a chain of promises;
+  promiseFlow(chain, task, idx, iteratorFunc) {
+    return chain.then(() => {
+      // Pre-process task aka animate circle to processing area
+      return task.initForControlFlow();
+    })
+    // Start task's processing animation
+    .then( executeStep(task, idx))
+    // Callback to indicate processing is complete
+    .then(() => {
+      return iteratorFunc(task, idx);
+    });
+  },
+
   initForControlFlow(el, idx) {
     return function() {
       return new Promise((resolve, reject) => {

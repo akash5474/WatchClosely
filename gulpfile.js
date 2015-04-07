@@ -68,7 +68,9 @@ gulp.task('watchify', function() {
     debug: true,
     cache: {}, packageCache: {}, fullPaths: true
   }))
-    .transform(babelify);
+    .transform(babelify.configure({
+      experimental: true
+    }));
 
   function rebundle() {
     return watcher.bundle()

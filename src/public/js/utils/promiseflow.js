@@ -1,52 +1,25 @@
-// Appends task to a chain of promises;
-function appendStep(chain, task, idx, iteratorFunc) {
-  return chain.then(() => {
-    // Pre-process task aka animate circle to processing area
-    return task.initForControlFlow();
-  })
-  // Start task's processing animation
-  .then( executeStep(task, idx))
-  // Callback to indicate processing is complete
-  .then(() => {
-    return iteratorFunc(task, idx);
-  });
-};
-
-function appendStepStringFunc() {
-  function addStepToChain(chain, task, idx, iteratorFunc) {
+function promiseFlowStringFunc() {
+  function promiseFlow(chain, item, idx, iteratorFunc) {
     return chain.then(() => {
       return new Promise((resolve, reject) => {
-        // Process the task
-        task.process(( err ) => {
+        // Process the item
+        item.process(( err ) => {
           if ( err ) return reject( err );
-          // Signal completion of processing task
+          // Signal resolution of promisified task
           resolve();
         });
       });
     })
-    // Callback to indicate processing is complete
     .then(() => {
-      return iteratorFunc(task, idx);
+      // Callback to indicate one processing
+      // step is complete
+      return iteratorFunc(idx);
     });
   };
 
-  let retStr = addStepToChain.toString();
-  console.log(retStr);
+  let retStr = promiseFlow.toString();
+  // console.log(retStr);
   return retStr;
-};
-
-// Return promisified task which resolves when completed;
-function executeStep(task, idx) {
-  return () => {
-    return new Promise((resolve, reject) => {
-      // Process the task
-      task.process(( err ) => {
-        if ( err ) return reject( err );
-        // Signal completion of processing task
-        resolve();
-      });
-    });
-  };
 };
 
 // Execute Sequential Processing
@@ -54,7 +27,7 @@ function executeSequence(arr, iteratorFunc) {
   let chain = Promise.resolve();
   arr.forEach((task, idx) => {
     // Queue up a chain of tasks
-    chain = appendStep(chain, task, idx, iteratorFunc)
+    chain = promiseFlow(chain, task, idx, iteratorFunc)
   });
   return chain.then();
 };
@@ -63,7 +36,7 @@ function executeSequence(arr, iteratorFunc) {
 function executeParallel(arr, iteratorFunc) {
   // Create an array of task promises for each task
   let tasks = arr.map((task, idx) => {
-    return appendStep(Promise.resolve(), task, idx, iteratorFunc);
+    return promiseFlow(Promise.resolve(), task, idx, iteratorFunc);
   });
 
   return Promise.all(tasks);
@@ -76,7 +49,7 @@ function executeLimitedParallel(arr, concurrency, iteratorFunc) {
     // Wrap in a function in order to
     // postpone processing for a later time
     return () => {
-      return appendStep(Promise.resolve(), task, idx, iteratorFunc);
+      return promiseFlow(Promise.resolve(), task, idx, iteratorFunc);
     };
   });
 
@@ -114,5 +87,5 @@ export default {
   executeSequence: executeSequence,
   executeParallel: executeParallel,
   executeLimitedParallel: executeLimitedParallel,
-  appendStepStringFunc: appendStepStringFunc
+  flowStringFunc: promiseFlowStringFunc
 };
