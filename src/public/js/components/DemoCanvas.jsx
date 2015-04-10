@@ -91,7 +91,7 @@ export default React.createClass({
     return (
       <div className="row">
         <div className="small-12 columns">
-          <button className="button"
+          <button className="button radius"
             onClick={this.startDemo}
           >Start</button>
         </div>

@@ -8,7 +8,7 @@ let utilFunc = "function promisifyIterator(item, idx, iteratorFunc) {\n"+
 "}\n\n"
 
 export default {
-  'sequence': utilFunc+"sequence(items, iteratorFunc, done) {\n"+
+  'sequence': utilFunc+"function sequence(items, iteratorFunc, done) {\n"+
   "  let sequence = Promise.resolve();\n"+
   "  items.forEach((item, idx) => {\n"+
   "    sequence = sequence.then(() => {\n"+
@@ -21,7 +21,7 @@ export default {
   "    done();\n"+
   "  });\n"+
   "}",
-  'parallel': utilFunc+"parallel(items, iteratorFunc, done) {\n"+
+  'parallel': utilFunc+"function parallel(items, iteratorFunc, done) {\n"+
   "  let promises = items.map((item, idx) => {\n"+
   "    return promisifyIterator(item, idx, iteratorFunc);\n"+
   "  });\n"+
@@ -31,7 +31,7 @@ export default {
   "    done()\n"+
   "  });\n"+
   "}",
-  'limitedParallel': utilFunc+"limitedParallel(items, iteratorFunc, done) {\n"+
+  'limitedParallel': utilFunc+"function limitedParallel(items, iteratorFunc, done) {\n"+
   "  let concurrency = 2;\n"+
   "  let running = 0;\n"+
   "  let promises = items.map((item, idx) => {\n"+

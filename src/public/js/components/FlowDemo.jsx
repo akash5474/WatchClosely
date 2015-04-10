@@ -1,7 +1,6 @@
 import React from 'react';
 import DemoCanvas from './DemoCanvas.jsx';
 import Rainbow from '../rainbow-custom.min';
-// import ExampleCanvas from './ExampleCanvas.jsx';
 import FlowContext from '../utils/contexts/flowcontext';
 
 export default React.createClass({

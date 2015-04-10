@@ -13,7 +13,7 @@ let utilFunc = "function runGeneratorFlow(generatorFunc) {\n"+
 "}\n\n";
 
 export default {
-  'sequence': utilFunc+"sequence(items, iteratorFunc, done) {\n"+
+  'sequence': utilFunc+"function sequence(items, iteratorFunc, done) {\n"+
   "  runGeneratorFlow(function* (callback) {\n"+
   "    for ( let i = 0; i < items.length; i++ ) {\n"+
   "      yield iteratorFunc(items[i], i, callback);\n"+
@@ -22,7 +22,7 @@ export default {
   "    done();\n"+
   "  });\n"+
   "}",
-  'parallel': utilFunc+"parallel(items, iteratorFunc, done) {\n"+
+  'parallel': utilFunc+"function parallel(items, iteratorFunc, done) {\n"+
   "  runGeneratorFlow(function* (callback) {\n"+
   "    let tasks = items.map((item, idx) => {\n"+
   "      return iteratorFunc(item, idx, callback);\n"+
@@ -33,7 +33,7 @@ export default {
   "    done();\n"+
   "  });\n"+
   "}",
-  'limitedParallel': utilFunc+"limitedParallel(items, iteratorFunc, done) {\n"+
+  'limitedParallel': utilFunc+"function limitedParallel(items, iteratorFunc, done) {\n"+
   "  let concurrency = 2;\n"+
   "  let running = 0;\n"+
   "  let tasks = items.map((item, idx) => {\n"+
