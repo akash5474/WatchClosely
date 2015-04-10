@@ -14,4 +14,8 @@ export default class StrategyContext {
     // console.log('running strategy', items, iteratorFunc.toString());
     this.currentState(items, iteratorFunc, done);
   }
+  stringFuncs(strategy) {
+    console.log('strate', strategy);
+    return this.states.stringFuncs[strategy];
+  }
 };

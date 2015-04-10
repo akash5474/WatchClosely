@@ -1,3 +1,5 @@
+import stringFuncs from './stringfuncs/generatorstringfuncs';
+
 function runGeneratorFlow(generatorFunc) {
   function callback(err) {
     if (err) {
@@ -13,6 +15,7 @@ function runGeneratorFlow(generatorFunc) {
 }
 
 export default {
+  stringFuncs,
   sequence(items, iteratorFunc, done) {
     runGeneratorFlow(function* (callback) {
       for ( let i = 0; i < items.length; i++ ) {

@@ -29,4 +29,7 @@ export default class FlowContext {
   runStrategy(items, iteratorFunc, done) {
     this.currentState.runStrategy(items, iteratorFunc, done);
   }
+  getStrategyCode() {
+    return this.currentState.stringFuncs(this.currentStrategy) || null;
+  }
 };

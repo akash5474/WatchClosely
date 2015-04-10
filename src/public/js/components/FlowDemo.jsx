@@ -1,28 +1,36 @@
 import React from 'react';
 import DemoCanvas from './DemoCanvas.jsx';
+import Rainbow from '../rainbow-custom.min';
+// import ExampleCanvas from './ExampleCanvas.jsx';
 import FlowContext from '../utils/contexts/flowcontext';
 
 export default React.createClass({
-  // componentDidMount() {
-  //   // this.setState({
-  //     // demoState: 'promise',
-  //     // flowContext: new FlowContext('promise')
-  //   // });
-  // },
   changeFlowContext(stateType) {
     return () => {
       this.state.flowContext.changeFlow(stateType);
+      this.changeExampleCode();
     };
   },
   changeFlowStrategy(flowStrategy) {
     return () => {
       this.state.flowContext.changeFlowStrategy(flowStrategy);
+      this.changeExampleCode();
     };
+  },
+  changeExampleCode() {
+    let example = this.state.flowContext.getStrategyCode();
+    window.Rainbow.color(example, 'javascript', (code) => {
+      this.setState({ code: code });
+    });
+  },
+  componentDidMount() {
+    this.changeExampleCode();
   },
   getInitialState() {
     return {
       demoState: 'promise',
-      flowContext: new FlowContext()
+      flowContext: new FlowContext(),
+      code: null
     };
   },
   render() {
@@ -62,7 +70,8 @@ export default React.createClass({
             <DemoCanvas flowContext={this.state.flowContext} />
           </div>
           <div className="small-7 columns">
-            <h3 className="text-center">Code Examples</h3>
+            <div dangerouslySetInnerHTML={{__html: '<pre>'+this.state.code+'</pre>'}}>
+            </div>
           </div>
         </div>
       </div>

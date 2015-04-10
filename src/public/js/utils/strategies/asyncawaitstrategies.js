@@ -1,15 +1,18 @@
+import stringFuncs from './stringfuncs/asyncawaitstringfuncs';
+
 function promisifyIterator(item, idx, iteratorFunc) {
   // console.log('promisifyIterator');
   return new Promise((resolve, reject) => {
     iteratorFunc(item, idx, (err) => {
-      // console.log('iterating');
+      console.log('iterating');
       if (err) reject(err);
       resolve();
     });
   });
-}
+};
 
 export default {
+  stringFuncs,
   sequence: async function sequence(items, iteratorFunc, done) {
     for ( let idx = 0; idx < items.length; idx++ ) {
       await promisifyIterator(items[idx], idx, iteratorFunc);
@@ -44,7 +47,7 @@ export default {
         running++;
 
         limitParallel();
-        await prom;
+        await prom();
         running--;
 
         if ( !running && !promises.length ) {

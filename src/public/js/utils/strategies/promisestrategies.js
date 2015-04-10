@@ -1,3 +1,5 @@
+import stringFuncs from './stringfuncs/promisestringfuncs';
+
 function promisifyIterator(item, idx, iteratorFunc) {
   // console.log('promisifyIterator');
   return new Promise((resolve, reject) => {
@@ -10,6 +12,7 @@ function promisifyIterator(item, idx, iteratorFunc) {
 }
 
 export default {
+  stringFuncs,
   sequence(items, iteratorFunc, done) {
     let sequence = Promise.resolve();
     items.forEach((item, idx) => {
@@ -21,10 +24,6 @@ export default {
     return sequence.then(() => {
       console.log('completed sequentialFlow promise');
       done();
-    }).catch((err) => {
-      console.log('ERROR: sequentialFlow promise')
-      console.log(err);
-      console.log(err.stack);
     });
   },
 
@@ -36,10 +35,6 @@ export default {
     return Promise.all(promises).then(() => {
       console.log('completed parallelFlow promise');
       done()
-    }).catch((err) => {
-      console.log('ERROR: parallelFlow promise')
-      console.log(err);
-      console.log(err.stack);
     });
   },
 
