@@ -24,7 +24,7 @@ export default React.createClass({
   animateCircle(circle, idx, done) {
     // console.log('animateing circle');
     circle.animate({
-      cx: 400,
+      cx: 380,
       cy: 50 + idx*100,
       fill: '#7ab828',
       stroke: '#7ab828'
@@ -34,7 +34,7 @@ export default React.createClass({
     });
   },
   resetDemo() {
-    if ( !this.state.demoComplete ) return Promise.resolve();
+    if ( !this.props.flowContext.complete ) return Promise.resolve();
 
     let promises = this.state.circles.map((circle, idx) => {
       return new Promise((resolve, reject) => {
@@ -45,33 +45,26 @@ export default React.createClass({
           stroke: '#346699'
         }, 1000, 'linear', (err) => {
           if (err) return reject(err);
-          this.setState({
-            demoComplete: false
-          });
           resolve();
         });
       });
     });
 
-    return Promise.all(promises);
+    return Promise.all(promises)
+    .then(() => {
+      this.props.flowContext.complete = false;
+    });
   },
   runDemo() {
     this.props.flowContext.runStrategy(this.state.circles,
       this.animateCircle, () => {
         console.log('demo finished');
-        this.setState({
-          demoComplete: true,
-          demoRunning: false
-        });
       });
   },
   startDemo() {
-    if ( this.state.demoRunning ) return;
+    if ( this.props.flowContext.running ) return;
 
     console.log('starting demo');
-    this.setState({
-      demoRunning: true
-    });
 
     this.resetDemo().then(() => {
       this.runDemo()
@@ -82,8 +75,6 @@ export default React.createClass({
   },
   getInitialState() {
     return {
-      demoRunning: false,
-      demoComplete: false,
       circles: []
     }
   },

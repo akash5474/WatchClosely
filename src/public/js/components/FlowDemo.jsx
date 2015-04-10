@@ -6,17 +6,20 @@ import FlowContext from '../utils/contexts/flowcontext';
 export default React.createClass({
   changeFlowContext(stateType) {
     return () => {
+      if ( this.state.flowContext.running ) return;
       this.state.flowContext.changeFlow(stateType);
       this.changeExampleCode();
     };
   },
   changeFlowStrategy(flowStrategy) {
     return () => {
+      if ( this.state.flowContext.running ) return;
       this.state.flowContext.changeFlowStrategy(flowStrategy);
       this.changeExampleCode();
     };
   },
   changeExampleCode() {
+    if ( this.state.flowContext.running ) return;
     let example = this.state.flowContext.getStrategyCode();
     window.Rainbow.color(example, 'javascript', (code) => {
       this.setState({ code: code });
@@ -52,6 +55,9 @@ export default React.createClass({
           </div>
           <div className="small-6 columns">
             <ul className="button-group radius right">
+              <li><button className="button"
+                onClick={this.changeFlowContext('plain')}
+              >Plain JS</button></li>
               <li><button className="button"
                 onClick={this.changeFlowContext('promise')}
               >Promises</button></li>

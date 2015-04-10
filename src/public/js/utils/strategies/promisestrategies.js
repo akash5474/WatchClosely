@@ -67,6 +67,6 @@ export default {
       });
     };
 
-    return limitParallel();
+    return limitParallel().then(done);
   }
 }

@@ -60,6 +60,6 @@ export default {
   "    });\n"+
   "  };\n"+
   "  \n"+
-  "  return limitParallel();\n"+
+  "  return limitParallel().then(done);\n"+
   "}"
 }
