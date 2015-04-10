@@ -6,20 +6,20 @@ import FlowContext from '../utils/contexts/flowcontext';
 export default React.createClass({
   changeFlowContext(stateType) {
     return () => {
-      if ( this.state.flowContext.running ) return;
+      if ( this.state.flowContext.isRunning() ) return;
       this.state.flowContext.changeFlow(stateType);
       this.changeExampleCode();
     };
   },
   changeFlowStrategy(flowStrategy) {
     return () => {
-      if ( this.state.flowContext.running ) return;
+      if ( this.state.flowContext.isRunning() ) return;
       this.state.flowContext.changeFlowStrategy(flowStrategy);
       this.changeExampleCode();
     };
   },
   changeExampleCode() {
-    if ( this.state.flowContext.running ) return;
+    if ( this.state.flowContext.isRunning() ) return;
     let example = this.state.flowContext.getStrategyCode();
     window.Rainbow.color(example, 'javascript', (code) => {
       this.setState({ code: code });
@@ -28,11 +28,16 @@ export default React.createClass({
   componentDidMount() {
     this.changeExampleCode();
   },
+  disableButtons(val) {
+    this.setState({
+      disableButtons: val
+    });
+  },
   getInitialState() {
     return {
-      demoState: 'promise',
-      flowContext: new FlowContext(),
-      code: null
+      flowContext: new FlowContext(this.disableButtons),
+      code: null,
+      disableButtons: false
     };
   },
   render() {
@@ -42,29 +47,36 @@ export default React.createClass({
         <div className="row">
           <div className="small-6 columns">
             <ul className="button-group radius left">
-              <li><button className="button"
+              <li><button className="small button"
+                disabled={this.state.disableButtons}
                 onClick={this.changeFlowStrategy('sequence')}
               >Sequential</button></li>
-              <li><button className="button"
+              <li><button className="small button"
+                disabled={this.state.disableButtons}
                 onClick={this.changeFlowStrategy('parallel')}
               >Parallel</button></li>
-              <li><button className="button"
+              <li><button className="small button"
+                disabled={this.state.disableButtons}
                 onClick={this.changeFlowStrategy('limitedParallel')}
               >Limited Parallel</button></li>
             </ul>
           </div>
           <div className="small-6 columns">
             <ul className="button-group radius right">
-              <li><button className="button"
+              <li><button className="small button"
+                disabled={this.state.disableButtons}
                 onClick={this.changeFlowContext('plain')}
               >Plain JS</button></li>
-              <li><button className="button"
+              <li><button className="small button"
+                disabled={this.state.disableButtons}
                 onClick={this.changeFlowContext('promise')}
               >Promises</button></li>
-              <li><button className="button"
+              <li><button className="small button"
+                disabled={this.state.disableButtons}
                 onClick={this.changeFlowContext('generator')}
               >Generators</button></li>
-              <li><button className="button"
+              <li><button className="small button"
+                disabled={this.state.disableButtons}
                 onClick={this.changeFlowContext('asyncAwait')}
               >Async Await</button></li>
             </ul>

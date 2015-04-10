@@ -5,7 +5,7 @@ export default React.createClass({
   initCanvas() {
     let node = React.findDOMNode(this.refs.demoCanvas);
     let width = node.offsetWidth;
-    let height = 500;
+    let height = 460;
     let paper = Raphael(node, width, height);
     let circles = [];
 
@@ -25,7 +25,7 @@ export default React.createClass({
     // console.log('animateing circle');
     circle.animate({
       cx: 380,
-      cy: 50 + idx*100,
+      cy: 50 + idx*90,
       fill: '#7ab828',
       stroke: '#7ab828'
     }, 1000, 'linear', (err) => {
@@ -34,7 +34,13 @@ export default React.createClass({
     });
   },
   resetDemo() {
-    if ( !this.props.flowContext.complete ) return Promise.resolve();
+    if ( !this.props.flowContext.isComplete()
+      || this.props.flowContext.isRunning() ) {
+
+      return Promise.resolve();
+    }
+
+    this.props.flowContext.setRunning(true);
 
     let promises = this.state.circles.map((circle, idx) => {
       return new Promise((resolve, reject) => {
@@ -52,19 +58,28 @@ export default React.createClass({
 
     return Promise.all(promises)
     .then(() => {
-      this.props.flowContext.complete = false;
+      this.props.flowContext.setComplete( false );
+      this.props.flowContext.setRunning(false);
     });
   },
   runDemo() {
     this.props.flowContext.runStrategy(this.state.circles,
       this.animateCircle, () => {
         console.log('demo finished');
+        this.props.flowContext.disableButtons(false);
+        this.setState({
+          disableButtons: false
+        });
       });
   },
   startDemo() {
-    if ( this.props.flowContext.running ) return;
+    if ( this.props.flowContext.isRunning() ) return;
 
     console.log('starting demo');
+    this.props.flowContext.disableButtons(true);
+    this.setState({
+      disableButtons: true
+    });
 
     this.resetDemo().then(() => {
       this.runDemo()
@@ -75,14 +90,16 @@ export default React.createClass({
   },
   getInitialState() {
     return {
-      circles: []
+      circles: [],
+      disableButtons: false
     }
   },
   render() {
     return (
       <div className="row">
         <div className="small-12 columns">
-          <button className="button radius"
+          <button className="small button success radius"
+            disabled={this.state.disableButtons}
             onClick={this.startDemo}
           >Start</button>
         </div>
